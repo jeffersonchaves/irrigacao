@@ -1,0 +1,520 @@
+[
+    {
+        "id": "5758356c280206bd",
+        "type": "tab",
+        "label": "Flow 3",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "68fe379f27aa38ef",
+        "type": "inject",
+        "z": "5758356c280206bd",
+        "name": "Início Irrigação - manhã",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "0 7 * * *",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "período de irrigação - manhã",
+        "payload": "",
+        "payloadType": "date",
+        "x": 170,
+        "y": 100,
+        "wires": [
+            [
+                "25d1317f7d644dc2"
+            ]
+        ]
+    },
+    {
+        "id": "c76676176bc5d175",
+        "type": "inject",
+        "z": "5758356c280206bd",
+        "name": "Início Irrigação - tarde",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "*/1 7 * * *",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "período de irrigação - tarde",
+        "payload": "",
+        "payloadType": "date",
+        "x": 170,
+        "y": 160,
+        "wires": [
+            [
+                "25d1317f7d644dc2"
+            ]
+        ]
+    },
+    {
+        "id": "25d1317f7d644dc2",
+        "type": "http request",
+        "z": "5758356c280206bd",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://192.168.0.35:8080/umidade",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 430,
+        "y": 120,
+        "wires": [
+            [
+                "443e0a0382fcc142",
+                "7e26438261362b7a"
+            ]
+        ]
+    },
+    {
+        "id": "fc2092f57aeb3c6d",
+        "type": "debug",
+        "z": "5758356c280206bd",
+        "name": "Mensagem: não irrigou!",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1210,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "443e0a0382fcc142",
+        "type": "switch",
+        "z": "5758356c280206bd",
+        "name": "Verifica umidade",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gte",
+                "v": "50",
+                "vt": "num"
+            },
+            {
+                "t": "lt",
+                "v": "50",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 670,
+        "y": 120,
+        "wires": [
+            [
+                "170bb1387eedb4c3"
+            ],
+            [
+                "57df8bba9077a2ab",
+                "0b2b62a3517adb51"
+            ]
+        ]
+    },
+    {
+        "id": "170bb1387eedb4c3",
+        "type": "function",
+        "z": "5758356c280206bd",
+        "name": "Prepara mensagem",
+        "func": "\nmsg.payload = \"A umidade {\" + msg.payload +\"%} já está de acordo com o necessário. Não é necessário irrigar!\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 930,
+        "y": 100,
+        "wires": [
+            [
+                "fc2092f57aeb3c6d",
+                "e81d836097bb9194",
+                "2628a82885fa3da3"
+            ]
+        ]
+    },
+    {
+        "id": "e81d836097bb9194",
+        "type": "ui_audio",
+        "z": "5758356c280206bd",
+        "name": "Audio",
+        "group": "6705f4f22e17bb13",
+        "voice": "Google português do Brasil",
+        "always": true,
+        "x": 1150,
+        "y": 20,
+        "wires": []
+    },
+    {
+        "id": "5b393a2e214106a4",
+        "type": "ui_button",
+        "z": "5758356c280206bd",
+        "name": "",
+        "group": "6705f4f22e17bb13",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Irrigar com verificação!",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 140,
+        "y": 40,
+        "wires": [
+            [
+                "25d1317f7d644dc2"
+            ]
+        ]
+    },
+    {
+        "id": "2628a82885fa3da3",
+        "type": "ui_text",
+        "z": "5758356c280206bd",
+        "group": "6705f4f22e17bb13",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "className": "",
+        "style": true,
+        "font": "Times New Roman,Times,serif",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 1150,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "7e26438261362b7a",
+        "type": "debug",
+        "z": "5758356c280206bd",
+        "name": "Exibe a umidade",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 650,
+        "y": 20,
+        "wires": []
+    },
+    {
+        "id": "753ead08ebb0d445",
+        "type": "delay",
+        "z": "5758356c280206bd",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "10",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "5",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 1080,
+        "y": 180,
+        "wires": [
+            [
+                "9ca4b98207e0cf92"
+            ]
+        ]
+    },
+    {
+        "id": "9ca4b98207e0cf92",
+        "type": "http request",
+        "z": "5758356c280206bd",
+        "name": "/desligar_bomba",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://192.168.0.35:8080/desligar_bomba",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1290,
+        "y": 180,
+        "wires": [
+            [
+                "25d1317f7d644dc2"
+            ]
+        ]
+    },
+    {
+        "id": "858886e39305d08c",
+        "type": "ui_audio",
+        "z": "5758356c280206bd",
+        "name": "Audio",
+        "group": "6705f4f22e17bb13",
+        "voice": "Google português do Brasil",
+        "always": true,
+        "x": 1150,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "57df8bba9077a2ab",
+        "type": "function",
+        "z": "5758356c280206bd",
+        "name": "Prepara mensagem",
+        "func": "\nmsg.payload = \"A umidade {\" + msg.payload +\"%} está abaixo do desejado. Irrigando!\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 260,
+        "wires": [
+            [
+                "858886e39305d08c"
+            ]
+        ]
+    },
+    {
+        "id": "619035c13848e521",
+        "type": "debug",
+        "z": "5758356c280206bd",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1360,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "5190821b2f7293b9",
+        "type": "http request",
+        "z": "5758356c280206bd",
+        "name": "/desligar_bomba",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://192.168.0.35:8080/desligar_bomba",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 330,
+        "y": 320,
+        "wires": [
+            [
+                "d9b96e3584405d30"
+            ]
+        ]
+    },
+    {
+        "id": "d9b96e3584405d30",
+        "type": "debug",
+        "z": "5758356c280206bd",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 580,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "7c667e3d6c8f996c",
+        "type": "http request",
+        "z": "5758356c280206bd",
+        "name": "/ligar_bomba",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://192.168.0.35:8080/ligar_bomba",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 330,
+        "y": 240,
+        "wires": [
+            [
+                "bb9ab6c87c5402bc"
+            ]
+        ]
+    },
+    {
+        "id": "bb9ab6c87c5402bc",
+        "type": "debug",
+        "z": "5758356c280206bd",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 600,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "0b2b62a3517adb51",
+        "type": "http request",
+        "z": "5758356c280206bd",
+        "name": "/ligar_bomba",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://192.168.0.35:8080/ligar_bomba",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 910,
+        "y": 180,
+        "wires": [
+            [
+                "753ead08ebb0d445"
+            ]
+        ]
+    },
+    {
+        "id": "8f39cb99ab4837f5",
+        "type": "ui_button",
+        "z": "5758356c280206bd",
+        "name": "",
+        "group": "6705f4f22e17bb13",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Irrigar!",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 90,
+        "y": 240,
+        "wires": [
+            [
+                "7c667e3d6c8f996c"
+            ]
+        ]
+    },
+    {
+        "id": "44d18fcfeeac1306",
+        "type": "ui_button",
+        "z": "5758356c280206bd",
+        "name": "",
+        "group": "6705f4f22e17bb13",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Parar Irrigação!",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 120,
+        "y": 320,
+        "wires": [
+            [
+                "5190821b2f7293b9"
+            ]
+        ]
+    },
+    {
+        "id": "6705f4f22e17bb13",
+        "type": "ui_group",
+        "name": "Dashboard Irrigação",
+        "tab": "29b6d7ee4fd028df",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "29b6d7ee4fd028df",
+        "type": "ui_tab",
+        "name": "IFPR",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    }
+]
